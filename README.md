@@ -20,6 +20,6 @@
 
  The C code compiles without warnings with the -Wall or /W4 flags (unless you uncomment and use the stb_image_write file, as those have warnings).
 
-Hopefully this is of use to you. If you want an explaination of how it works / my reasonings for developing it, check out my blog post pursuitofgamedev.com/colorang
+Hopefully this is of use to you. If you want an explaination of how it works / my reasonings for developing it, check out my [blog post at Pursuit of Gamedev](https://pursuitofgamedev.com/colorang)
 
 So long!
