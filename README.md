@@ -13,9 +13,9 @@
  There is also a copy of [Sean Barret's stb_image_write](https://github.com/nothings/stb/blob/master/stb_image_write.h) (commented out initially in the colorang.c file) so you can export the colorang to pngs if you want to look at them.
 
  You can compile the C code with any C compiler:
-    MSVC:  cl /O2 colorang.c
-    GNU:   gcc -O3 colorang.c
-    CLANG: clang -O3 colorang.c 
+    - **MSVC:**  cl /O2 colorang.c
+    - **GNU:**   gcc -O3 colorang.c
+    - **CLANG**: clang -O3 colorang.c 
 
  The C code compiles without warnings with the -Wall or /W4 flags (unless you uncomment and use the stb_image_write file, as those have warnings).
 
