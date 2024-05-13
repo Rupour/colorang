@@ -3,11 +3,13 @@
 
  ## There are two folders, 'Web' and 'C'. 
 
- The Web folder is the website demo colorang.org. The Javascript code is messy, but functional. There is one main bug I know about, where it seems like HTML canvases premultiply the alpha into the RGB channels, causing a major loss of precision at low transparency values. However, if you select your color on a normal alpha value, then decrease the alpha, it works fine.
+ ### The Web folder is the website demo colorang.org. 
+
+ The Javascript code is messy, but functional. There is one main bug I know about, where it seems like HTML canvases premultiply the alpha into the RGB channels, causing a major loss of precision at low transparency values. However, if you select your color on a normal alpha value, then decrease the alpha, it works fine.
 
  You can just open the index.html in any web browser and the colorang should load. It uses no dependancies.
 
- ## The C folder contains a C99 compatible implementation of the colorang so you can embed it in your application. 
+ ### The C folder contains a C99 compatible implementation of the colorang so you can embed it in your application. 
  There is also a copy of [Sean Barret's stb_image_write](https://github.com/nothings/stb/blob/master/stb_image_write.h) (commented out initially in the colorang.c file) so you can export the colorang to pngs if you want to look at them.
 
  You can compile the C code with any C compiler:
