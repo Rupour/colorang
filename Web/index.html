@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Colorang!</title>
+<link rel="icon" type="image/png" href="colorang!.png">
+<style>
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    margin-top: 25px;
+    background-color: #f0f0f0;
+}
+.main-container {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center; /* Center children horizontally */
+    width: 100%; /* Make main-container take full width */
+}
+
+.instruct {
+    text-align: center; /* Centers the instruction text horizontally */
+    margin-top: 20px; /* Adds space above the instruction paragraph */
+}
+
+.canvas-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center the canvases vertically */
+}
+
+.transparent-container {
+    position: relative;
+    width: 256px; /* Match canvas width */
+    height: 256px; /* Match canvas height */
+}
+
+.transparent-container canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%; /* Match container width */
+    height: 100%; /* Match container height */
+}
+
+.transparent-container-current {
+    position: relative;
+    width: 256px; /* Match canvas width */
+    height: 32px; /* Match canvas height */
+}
+
+.transparent-container-current canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%; /* Match container width */
+    height: 100%; /* Match container height */
+}
+
+.transparent-container canvas:first-child {
+    z-index: 1; /* Set the transparent canvas at a lower z-index */
+}
+
+.transparent-container canvas:last-child {
+    z-index: 2; /* Set the colored canvas at a higher z-index */
+}
+
+#alphaCanvas {
+    position: relative;
+    margin-top: 4px;
+    width: 256px; /* Ensure consistent width */
+
+} 
+#currentColorCanvas {
+    position: relative;
+    margin-top: 16px;
+    width: 256px; /* Ensure consistent width */
+}
+
+#grayCanvas {
+    position: relative;
+    margin-top: 8px;
+    width: 256px; /* Ensure consistent width */
+}
+
+.copies {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5px; /* Optional: space between buttons */
+    width: 100%; /* Adjust as necessary */
+}
+
+.copies button {
+    font-size: 16px;
+    width: 100%; /* Make buttons fill the available column space */
+    height: 25; /* Adjust as necessary for uniform height */
+    box-sizing: border-box; /* Include padding and borders in the element's width and height */
+}
+
+#colorParagraph {
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    margin-bottom: 4px;
+    margin-top: 20px;
+    user-select: none; /* Default state is non-selectable */
+    padding-left: 15px; /* Add padding to increase the mouseover area */
+    padding-right: 15px; /* Add padding to increase the mouseover area */
+    background-color: transparent; /* Ensure the padding does not alter visual style */
+    box-sizing: border-box; /* Include padding in the element's dimensions */
+}
+
+#grayColorPara {
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    margin-bottom: 3px;
+    margin-top: 6px;
+    user-select: none; /* Default state is non-selectable */
+    background-color: transparent; /* Ensure the padding does not alter visual style */
+}
+
+
+
+</style>
+</head>
+<body>
+  <div class="content-container">
+<div class="main-container">
+    <div class="canvas-container">
+        <div class="transparent-container">
+            <canvas id="transparentCanvasBR" width="256" height="256"></canvas>
+            <canvas id="blueRedCanvas" width="256" height="256"></canvas>
+        </div>
+        <canvas id="grayCanvas" width="256" height="32"></canvas>
+        <p id="grayColorPara">0</p>
+        <canvas id="alphaCanvas" width="256" height="32"></canvas>
+        <div class="transparent-container-current">
+            <canvas id="transparentCurrentColorCanvas" style="margin-top: 16px;" width="256" height="32"></canvas>
+            <canvas id="currentColorCanvas" width="256" height="32"></canvas>
+        </div>
+        <p id="colorParagraph" onmouseover="enableSelection(this)" onmouseout="disableSelection(this)">0, 0, 0, 255</p>
+        <div class="copy-buttons">
+            <div class="copies" style="margin-bottom:5px;user-select: none;">
+                    <button id="copyButton">Copy RGBA</button>
+                    <button id="copyButtonRGBAHEX">Copy HEXA</button>
+            </div>
+            <div class="copies"style="margin-bottom:5px;user-select: none;">
+                    <button id="copyButtonRGB">Copy RGB</button>
+                    <button id="copyButtonRGBHEX">Copy HEX</button>
+            </div>
+            
+        </div>
+    </div>
+    <div class="canvas-container">
+        <div class="transparent-container">
+            <canvas id="transparentCanvasRG" width="256" height="256"></canvas>
+            <canvas id="redGreenCanvas" width="256" height="256"></canvas>
+        </div>
+
+        <div class="transparent-container">
+            <canvas id="transparentCanvasGB" width="256" height="256"></canvas>
+            <canvas id="greenBlueCanvas" width="256" height="256"></canvas>
+        </div>
+    </div>
+</div>
+
+<p></p>
+  <p class="instruct" style="font-size: 20px;">You can copy and paste using the regular keyboard shortcuts, copying defaults to HEX.</p>
+    
+  </div>
+<script src="colorang.js"></script>
+</body>
+</html>
