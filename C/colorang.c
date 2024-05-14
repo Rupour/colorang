@@ -21,6 +21,12 @@ typedef struct {
     u8 r, g, b, a;
 } color;
 
+typedef enum {
+    RED_GREEN_BITMAP,
+    GREEN_BLUE_BITMAP,
+    BLUE_RED_BITMAP,
+} BitmapType;
+
 typedef struct {
     u8 red_green_bitmap         [WIDTH * HEIGHT * CHANNELS_PER_PIXEL];
     u8 green_blue_bitmap        [WIDTH * HEIGHT * CHANNELS_PER_PIXEL];
@@ -398,7 +404,20 @@ void colorang_update_gray_value(colorang *cr, u8 gray_value) {
     colorang_set_current_color(cr, rgba(*offset_index, *(offset_index+1), *(offset_index+2), *(offset_index+3)));
 }
 
-void colorang_update_current_color_from_pos(colorang *cr, u8 x, u8 y, u8 *bitmap) {
+void colorang_update_current_color_from_pos(colorang *cr, u8 x, u8 y, BitmapType type) {
+    u8 *bitmap = NULL;
+    switch (type){
+        case RED_GREEN_BITMAP:
+            bitmap = cr->red_green_bitmap;
+            break;
+        case GREEN_BLUE_BITMAP:
+            bitmap = cr->green_blue_bitmap;
+            break;
+        case BLUE_RED_BITMAP:
+            bitmap = cr->blue_red_bitmap;
+            break;
+    }
+
     cr->x = x;
     cr->y = y;
     cr->current_bitmap = bitmap;
@@ -449,7 +468,7 @@ int main(void) {
     colorang_init(cr);
 
     // For when the user selects a new color
-    colorang_update_current_color_from_pos(cr, 0, 0, cr->red_green_bitmap);
+    colorang_update_current_color_from_pos(cr, 0, 0, RED_GREEN_BITMAP);
 
     // For when the user updates the gray / alpha value
     colorang_update_gray_value(cr, 80);
