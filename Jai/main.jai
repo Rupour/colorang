@@ -20,7 +20,7 @@ Color :: struct {
     r, g, b, a: u8;
 }
 
-BitmapType :: enum u32 {
+Bitmap_Type :: enum u32 {
 	RED_GREEN_BITMAP;
 	GREEN_BLUE_BITMAP;
 	BLUE_RED_BITMAP;
@@ -41,19 +41,19 @@ Colorang :: struct {
 	alpha_value: u8;
 	current_color: Color;
 
-	current_bitmap: BitmapType;
+	current_bitmap: Bitmap_Type;
 	x: u8;
 	y: u8;
 }
 
 
 calculate_rg_bitmap :: (cr: *Colorang) {
-	rg_bitmap   := cr.red_green_bitmap;
+	rg_bitmap   : [] u8 = cr.red_green_bitmap;
 	gray_value  := cr.gray_value;
 	alpha_value := cr.alpha_value;
 
     for y: 0..(HEIGHT-1) { 
-		vertical_blend := 1.0 - cast(float) (y / (HEIGHT - 1));
+        vertical_blend := 1.0 - (cast(float) y / (HEIGHT - 1.0));
 		for x: 0..(WIDTH-1) { 
 			horizontal_blend := cast(float) x / (WIDTH - 1);
 			index := (y * WIDTH + x) * CHANNELS_PER_PIXEL;
@@ -72,12 +72,13 @@ calculate_rg_bitmap :: (cr: *Colorang) {
             rg_bitmap[index + 1] = green;
             rg_bitmap[index + 2] = blue;
             rg_bitmap[index + 3] = alpha_value;
+			// log("[%, %, %, %] ", red, green, blue, alpha_value);
         }
     }
 }
 
 calculate_gb_bitmap :: (cr: *Colorang) {
-	gb_bitmap := cr.green_blue_bitmap;
+	gb_bitmap   : [] u8 = cr.green_blue_bitmap;
     gray_value  := cr.gray_value;
     alpha_value := cr.alpha_value;
 
@@ -91,8 +92,7 @@ calculate_gb_bitmap :: (cr: *Colorang) {
 			index_channel: int;
 
 			blend_factor := 1.0;
-            if (x > y) blend_factor = 1 - horizontal_blend;
-            else       blend_factor = 1 - vertical_blend;
+            if (x > y) then blend_factor = 1.0 - horizontal_blend; else blend_factor = 1.0 - vertical_blend;
 			adjusted_gray_value := cast(u8)(gray_value * blend_factor);
 
             index_channel = index / CHANNELS_PER_PIXEL;
@@ -109,7 +109,7 @@ calculate_gb_bitmap :: (cr: *Colorang) {
 }
 
 calculate_br_bitmap :: (cr: *Colorang) {
-	br_bitmap  	:= cr.blue_red_bitmap;
+	br_bitmap   : [] u8 = cr.blue_red_bitmap;
     gray_value  := cr.gray_value;
     alpha_value := cr.alpha_value;
 
@@ -140,7 +140,7 @@ calculate_br_bitmap :: (cr: *Colorang) {
 }
 
 fill_gray_bitmap :: (cr: *Colorang) {
-	gbitmap := cr.gray_bitmap;
+	gbitmap: [] u8 = cr.gray_bitmap;
 	alpha   := cr.alpha_value;
 
 	channels_per_pixel := 4;
@@ -160,7 +160,7 @@ fill_gray_bitmap :: (cr: *Colorang) {
 
 
 fill_alpha_bitmap :: (cr: *Colorang) {
-	abitmap := cr.alpha_bitmap;
+	abitmap : [] u8 = cr.alpha_bitmap;
 	gray_colors := u8.[128, 196];
 
 	pixel_block_size := 8;
@@ -189,7 +189,7 @@ fill_alpha_bitmap :: (cr: *Colorang) {
 
 
 fill_current_color_bitmap :: (cr: *Colorang) {
-	ccbitmap := cr.color_bitmap;
+	ccbitmap: [] u8 = cr.color_bitmap;
 	alpha    := cr.alpha_value;
 	r := cr.current_color.r;
 	g := cr.current_color.g;
@@ -212,7 +212,7 @@ fill_current_color_bitmap :: (cr: *Colorang) {
 }
 
 fill_transparent_bitmap :: (cr: *Colorang) {
-	tbitmap := cr.transparent_bitmap;
+	tbitmap : [] u8 = cr.transparent_bitmap;
 	alpha   := cr.alpha_value;
 	gray_colors := u8.[128, 196];
 
@@ -235,7 +235,7 @@ fill_transparent_bitmap :: (cr: *Colorang) {
 }
 
 fill_transparent_color_bitmap :: (cr: *Colorang) {
-	tcbitmap := cr.transparent_color_bitmap;
+	tcbitmap : [] u8 = cr.transparent_color_bitmap;
 	alpha    := cr.alpha_value;
 	gray_colors := u8.[196, 128];
 
@@ -341,7 +341,8 @@ update_gray_value_and_position_from_color :: (cr: *Colorang, c: Color) {
             blend_factor = 1 - vertical_blend;
         }
 
-        cr.gray_value = green / cast(u8) (1.0 - blend_factor);
+		temp : float = green / (1.0 - blend_factor);
+        cr.gray_value = cast(u8) temp;
     }
 
 }
@@ -411,7 +412,7 @@ colorang_update_gray_value :: (cr: *Colorang, gray_value: u8) {
     colorang_set_current_color(cr, color);
 }
 
-colorang_update_current_color_from_pos :: (cr: *Colorang, x: u8, y: u8, type: BitmapType) {
+colorang_update_current_color_from_pos :: (cr: *Colorang, x: u8, y: u8, type: Bitmap_Type) {
     bitmap: [] u8;
     if type == {
         case .RED_GREEN_BITMAP;
@@ -453,7 +454,6 @@ colorang_init :: (cr: *Colorang) {
     fill_gray_bitmap(cr);
     fill_alpha_bitmap(cr);
     fill_transparent_bitmap(cr);
-    fill_transparent_bitmap(cr);
     fill_transparent_color_bitmap(cr);
 
     // Needs to be called every time the user clicks a new color
@@ -475,19 +475,20 @@ rgb :: (r: u8, g: u8, b: u8) -> Color {
 
 main :: () {
     
-	cr := New(Colorang); 
+    cr := New(Colorang); 
     colorang_init(cr);
 
-    // For when the user selects a new color
+    // For when the user selects a new color on one of the three bitmaps
     colorang_update_current_color_from_pos(cr, 0, 0, .RED_GREEN_BITMAP);
 
     // For when the user updates the gray / alpha value
-    // colorang_update_gray_value(cr, 80);
-    // colorang_update_alpha_value(cr, 100);
+    colorang_update_gray_value(cr, 80);
+    colorang_update_alpha_value(cr, 100);
 
     // For when the user pastes a new color
-	// light_purple := rgba(123, 66, 158, 255);
-	// colorang_update_from_color(cr, light_purple);
+	light_purple := rgba(123, 66, 158, 255);
+	colorang_update_from_color(cr, light_purple);
+
 
 
     /*
@@ -496,11 +497,14 @@ main :: () {
     */
 
     // stbi_write_png("images/br_bitmap.png", WIDTH, HEIGHT, 4, cr.blue_red_bitmap.data,    WIDTH * 4);
+
+
+    stbi_write_png("images/br_bitmap.png", WIDTH, HEIGHT, 4, cr.blue_red_bitmap.data,    WIDTH * 4);
     stbi_write_png("images/rg_bitmap.png", WIDTH, HEIGHT, 4, cr.red_green_bitmap.data,   WIDTH * 4);
-    // stbi_write_png("images/gb_bitmap.png", WIDTH, HEIGHT, 4, cr.green_blue_bitmap.data,  WIDTH * 4);
-    // stbi_write_png("images/g_bitmap.png" , WIDTH, GRAY_HEIGHT,  4, cr.gray_bitmap.data,  WIDTH * 4);
-    // stbi_write_png("images/a_bitmap.png" , WIDTH, ALPHA_HEIGHT, 4, cr.alpha_bitmap.data, WIDTH * 4);
-    // stbi_write_png("images/cc_bitmap.png", WIDTH, COLOR_HEIGHT, 4, cr.color_bitmap.data, WIDTH * 4);
-    // stbi_write_png("images/t_bitmap.png",  WIDTH, HEIGHT,       4, cr.transparent_bitmap.data, WIDTH * 4);
-    // stbi_write_png("images/tc_bitmap.png", WIDTH, COLOR_HEIGHT, 4, cr.transparent_color_bitmap.data, WIDTH * 4);
+    stbi_write_png("images/gb_bitmap.png", WIDTH, HEIGHT, 4, cr.green_blue_bitmap.data,  WIDTH * 4);
+    stbi_write_png("images/g_bitmap.png" , WIDTH, GRAY_HEIGHT,  4, cr.gray_bitmap.data,  WIDTH * 4);
+    stbi_write_png("images/a_bitmap.png" , WIDTH, ALPHA_HEIGHT, 4, cr.alpha_bitmap.data, WIDTH * 4);
+    stbi_write_png("images/cc_bitmap.png", WIDTH, COLOR_HEIGHT, 4, cr.color_bitmap.data, WIDTH * 4);
+    stbi_write_png("images/t_bitmap.png",  WIDTH, HEIGHT,       4, cr.transparent_bitmap.data, WIDTH * 4);
+    stbi_write_png("images/tc_bitmap.png", WIDTH, COLOR_HEIGHT, 4, cr.transparent_color_bitmap.data, WIDTH * 4);
 }

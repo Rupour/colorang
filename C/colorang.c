@@ -1,7 +1,8 @@
 #include <stdlib.h>
+#include <stdio.h>
 
-// #define STB_IMAGE_WRITE_IMPLEMENTATION
-// #include "stb_image_write.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 typedef unsigned char u8;
 
@@ -74,6 +75,7 @@ void calculate_rg_bitmap(colorang *cr) {
             rg_bitmap[index + 1] = green;
             rg_bitmap[index + 2] = blue;
             rg_bitmap[index + 3] = alpha_value;
+            printf("[%d, %d, %d, %d]\n", red, green, blue, alpha_value);
         }
     }
 }
@@ -448,7 +450,6 @@ void colorang_init(colorang *cr) {
     fill_gray_bitmap(cr);
     fill_alpha_bitmap(cr);
     fill_transparent_bitmap(cr);
-    fill_transparent_bitmap(cr);
     fill_transparent_color_bitmap(cr);
 
     // Needs to be called every time the user clicks a new color
@@ -467,16 +468,16 @@ int main(void) {
     if (!cr) return 1;
     colorang_init(cr);
 
-    // For when the user selects a new color
-    colorang_update_current_color_from_pos(cr, 0, 0, RED_GREEN_BITMAP);
-
-    // For when the user updates the gray / alpha value
-    colorang_update_gray_value(cr, 80);
-    colorang_update_alpha_value(cr, 100);
-
-    // For when the user pastes a new color
-    color light_purple = rgba(123, 66, 158, 255);
-    colorang_update_from_color(cr, light_purple);
+    // // For when the user selects a new color
+    // colorang_update_current_color_from_pos(cr, 0, 0, RED_GREEN_BITMAP);
+    //
+    // // For when the user updates the gray / alpha value
+    // colorang_update_gray_value(cr, 80);
+    // colorang_update_alpha_value(cr, 100);
+    //
+    // // For when the user pastes a new color
+    // color light_purple = rgba(123, 66, 158, 255);
+    // colorang_update_from_color(cr, light_purple);
 
 
     /*
@@ -485,7 +486,7 @@ int main(void) {
     */
 
     // stbi_write_png("images/br_bitmap.png", WIDTH, HEIGHT, 4, cr->blue_red_bitmap,    WIDTH * 4);
-    // stbi_write_png("images/rg_bitmap.png", WIDTH, HEIGHT, 4, cr->red_green_bitmap,   WIDTH * 4);
+    stbi_write_png("images/rg_bitmap.png", WIDTH, HEIGHT, 4, cr->red_green_bitmap,   WIDTH * 4);
     // stbi_write_png("images/gb_bitmap.png", WIDTH, HEIGHT, 4, cr->green_blue_bitmap,  WIDTH * 4);
     // stbi_write_png("images/g_bitmap.png" , WIDTH, GRAY_HEIGHT,  4, cr->gray_bitmap,  WIDTH * 4);
     // stbi_write_png("images/a_bitmap.png" , WIDTH, ALPHA_HEIGHT, 4, cr->alpha_bitmap, WIDTH * 4);
